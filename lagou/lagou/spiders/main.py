@@ -32,7 +32,7 @@ class KeywordSpider(scrapy.Spider):
         for i in menu_sub:
             print i
         '''
-        f.close()
+
         print "Done"
         print "\n"*5
         '''
