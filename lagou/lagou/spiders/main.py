@@ -5,10 +5,8 @@ from lagou.items import LagouItem
 import codecs
 class KeywordSpider(scrapy.Spider):
     name = 'lagou'
-
-    allowed_donmains=['lagou.com']
+    allowed_donmains=[' lagou.com']
     start_urls=['http://www.lagou.com/']
-
 
     def parse(self, response):
         print "\n"*5
@@ -41,6 +39,3 @@ class KeywordSpider(scrapy.Spider):
         dl=menu_sub[0].xpath('dl')
         for i in dl:
         '''
-
-
-
