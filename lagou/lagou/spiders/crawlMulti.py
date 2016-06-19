@@ -12,4 +12,3 @@ class AutoCrawl(CrawlSpider):
         url=response.url
         print url
         yield Request(url=url,callback='parse_link')
-        
