@@ -5,6 +5,7 @@ from lagou.items import LagouItem
 import codecs
 class KeywordSpider(scrapy.Spider):
     name = 'lagou'
+
     allowed_donmains=['lagou.com']
     start_urls=['http://www.lagou.com/']
 

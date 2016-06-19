@@ -15,3 +15,6 @@ class LagouItem(scrapy.Item):
     #pass
     #area=scrapy.Field()
     job=scrapy.Field()
+
+    tech_area=scrapy.Field()
+    job_name=scrapy.Field()
