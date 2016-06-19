@@ -33,6 +33,7 @@ class KeywordSpider(scrapy.Spider):
             print i
         '''
         f.close()
+        
         print "Done"
         print "\n"*5
         '''
