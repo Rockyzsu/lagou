@@ -1,30 +1,32 @@
-#-*-coding=utf-8-*-
+# -*-coding=utf-8-*-
 import json
 from lagou.items import LagouItem
 import scrapy
 
+
 class lagouspider(scrapy.Spider):
     name = 'lagou'
-    allowed_domains=['lagou.com']
-    def __init__(self):
-        self.headers =   {
-               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
-               'Referer': 'https://www.lagou.com/gongsi/j917.html',
-               }
-        self.data = {'companyId': '917',
-                'positionFirstType': u'全部',
-                'schoolJob': 'False',
-                'pageNo': '1',
-                'pageSize': '10'}
+    allowed_domains = ['lagou.com']
 
-        self.url='https://www.lagou.com/gongsi/searchPosition.json'
+    def __init__(self):
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+            'Referer': 'https://www.lagou.com/gongsi/j917.html',
+        }
+        self.data = {'companyId': '917',
+                     'positionFirstType': u'全部',
+                     'schoolJob': 'False',
+                     'pageNo': '1',
+                     'pageSize': '10'}
+
+        self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
 
     def start_requests(self):
         self.data = {'companyId': '917',
-                'positionFirstType': u'全部',
-                'schoolJob': 'False',
-                'pageNo': '1',
-                'pageSize': '10'}
+                     'positionFirstType': u'全部',
+                     'schoolJob': 'False',
+                     'pageNo': '1',
+                     'pageSize': '10'}
         yield scrapy.FormRequest(
             url=self.url,
             headers=self.headers,
@@ -36,32 +38,38 @@ class lagouspider(scrapy.Spider):
         print 'in parse'
         js = json.loads(response.body)
         totalCount = int(js.get('content').get('data').get('page').get('totalCount'))
-        page = (totalCount + 10)/10
-        for i in range(1,page+1):
-            yield scrapy.FormRequest(url=self.url,headers=self.headers,callback=self.parse_data,formdata=self.data)
+        page = (totalCount + 10) / 10
+        for i in range(1, page + 1):
+            self.data['pageNo']=str(i)
+            print 'page: ', i
+            yield scrapy.FormRequest(url=self.url, headers=self.headers, callback=self.parse_data, formdata=self.data)
 
-
-    def parse_data(self,response):
+    def parse_data(self, response):
         js = json.loads(response.body)
         results = js.get('content').get('data').get('page').get('result')
+        if not results:
+            print 'empty'
+            return
         for i in results:
-            item=LagouItem()
-            item['companyId'] =i.get('companyId')
-            item['positionId'] =i.get('positionId')
-            item['jobNature'] =i.get('jobNature')
-            item['companyName'] =i.get('companyName')
-            item['financeStage'] =i.get('financeStage')
-            item['companyFullName'] =i.get('companyFullName')
-            item['companySize'] =i.get('companySize')
-            item['industryField'] =i.get('industryField')
-            item['positionName'] =i.get('positionName')
-            item['city'] =i.get('city')
-            item['createTime'] =i.get('createTime')
-            item['salary'] =i.get('salary')
-            item['workYear'] =i.get('workYear')
-            item['education'] =i.get('education')
-            item['positionAdvantage'] =i.get('positionAdvantage')
-            item['district'] =i.get('district')
-            item['companyLabelList'] =';'.joint(i.get('companyLabelList'))
+            # 13k-25k
+            item = LagouItem()
+            item['companyId'] = i.get('companyId')
+            item['positionId'] = i.get('positionId')
+            item['jobNature'] = i.get('jobNature')
+            item['companyName'] = i.get('companyName')
+            item['financeStage'] = i.get('financeStage')
+            item['companyFullName'] = i.get('companyFullName')
+            item['companySize'] = i.get('companySize')
+            item['industryField'] = i.get('industryField')
+            item['positionName'] = i.get('positionName')
+            item['city'] = i.get('city')
+            item['createTime'] = i.get('createTime')
+            item['salary_low'] = i.get('salary').split('-')[0]
+            item['salary_high'] = i.get('salary').split('-')[1]
+            item['workYear'] = i.get('workYear')
+            item['education'] = i.get('education')
+            item['positionAdvantage'] = i.get('positionAdvantage')
+            item['district'] = i.get('district')
+            item['companyLabelList'] = ';'.join(i.get('companyLabelList'))
 
             yield item
