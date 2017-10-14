@@ -11,6 +11,7 @@ class LagouPipeline(object):
         self.session=DBSession()
 
     def process_item(self, item, spider):
+
         obj = Jobs(
         companyId = item['companyId'],
         positionId = item['positionId'],
@@ -38,6 +39,6 @@ class LagouPipeline(object):
         except:
             self.session.rollback()
 
-        self.session.close()
+        #self.session.close()
 
         return item
