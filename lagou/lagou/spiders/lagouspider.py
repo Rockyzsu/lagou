@@ -9,6 +9,7 @@ class lagouspider(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
+        self.companyid=32687
         self.cookie = {'user_trace_token': '20160612223035-3a02d006-30aa-11e6-a343-5254005c3644',
                        'LGUID': '20160612223035-3a02d566-30aa-11e6-a343-5254005c3644',
                        'PRE_UTM': '',
@@ -42,10 +43,10 @@ class lagouspider(scrapy.Spider):
                         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
 
                         'Pragma': 'no-cache', 'Cache-Control': 'no-cache',
-                        'Referer': 'https://www.lagou.com/gongsi/j917.html',
+                        'Referer': 'https://www.lagou.com/gongsi/j%s.html' %self.companyid,
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
-        self.data = {'companyId': '917',
+        self.data = {'companyId': str(self.companyid),
                      'positionFirstType': u'全部',
                      'schoolJob': 'False',
                      'pageNo': '1',

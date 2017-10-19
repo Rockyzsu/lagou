@@ -26,7 +26,7 @@ class Jobs(Base):
     industryField = Column(String(160))
     positionName = Column(String(160),index=True)
     city = Column(String(160))
-    createTime = Column(DateTime,index=True)
+    createTime = Column(String(80),index=True)
     salary_low = Column(Integer,index=True)
     salary_high = Column(Integer,index=True)
     workYear = Column(String(160))
