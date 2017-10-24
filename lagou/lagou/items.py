@@ -29,3 +29,7 @@ class LagouItem(scrapy.Item):
     district = scrapy.Field()
     companyLabelList = scrapy.Field()
 
+
+class CompanyItem(scrapy.Item):
+    companyId=scrapy.Field()
+    companyFullName=scrapy.Field()

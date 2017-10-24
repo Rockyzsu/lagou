@@ -60,7 +60,8 @@ class lagouspider(scrapy.Spider):
             url=self.url,
             headers=self.headers,
             formdata=self.data,
-            callback=self.parse,dont_filter=True
+            callback=self.parse,
+            dont_filter=True
         )
 
     def parse(self, response):
