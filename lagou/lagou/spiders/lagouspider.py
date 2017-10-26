@@ -1,5 +1,7 @@
 # -*-coding=utf-8-*-
 import json
+
+import re
 from lagou.items import LagouItem
 import scrapy
 
@@ -42,10 +44,10 @@ class lagouspider(scrapy.Spider):
                         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
 
                         'Pragma': 'no-cache', 'Cache-Control': 'no-cache',
-                        'Referer': 'https://www.lagou.com/gongsi/j917.html',
+                        'Referer': 'https://www.lagou.com/gongsi/j197319.html',
                         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
-        self.data = {'companyId': '917',
+        self.data = {'companyId': '197319',
                      'positionFirstType': u'全部',
                      'schoolJob': 'False',
                      'pageNo': '1',
@@ -97,8 +99,14 @@ class lagouspider(scrapy.Spider):
             item['positionName'] = i.get('positionName')
             item['city'] = i.get('city')
             item['createTime'] = i.get('createTime')
-            item['salary_low'] = int(i.get('salary').split('-')[0].replace('k','000'))
-            item['salary_high'] = int(i.get('salary').split('-')[1].replace('k','000'))
+            try:
+                s = i.get('salary')
+                if re.findall('K',s):
+                    s=s.replace('K','k')
+                item['salary_low'] = int(s.split('-')[0].replace('k', '000'))
+                item['salary_high'] = int(s.split('-')[1].replace('k', '000'))
+            except Exception,e:
+                print e
             item['workYear'] = i.get('workYear')
             item['education'] = i.get('education')
             item['positionAdvantage'] = i.get('positionAdvantage')
