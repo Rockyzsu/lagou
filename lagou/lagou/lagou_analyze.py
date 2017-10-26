@@ -7,15 +7,15 @@ def change_data():
     #print len(jobs)
     for job in jobs:
         #print job.positionName
-        job.salary_high=int(job.salary_high.replace('k','000'))
-        job.salary_low=int(job.salary_low.replace('k','000'))
-        session.commit()
+        job.salary_high=jobs.salary_high
+        job.salary_low=job.salary_low
+        #session.commit()
 
-    session.close()
+    #session.close()
 
 def analyze():
     session=DBSession()
-    ret = session.query(Jobs.salary_low,Jobs.salary_high,Jobs.positionName).order_by(Jobs.salary_high).all()
+    ret = session.query(Jobs.salary_low,Jobs.salary_high,Jobs.positionName).order_by(Jobs.salary_high).filter(Jobs.companyId==197319).all()
     salary_low = [i[0] for i in ret]
     for i in salary_low:
         #print i
