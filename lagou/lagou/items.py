@@ -28,6 +28,7 @@ class LagouItem(scrapy.Item):
     positionAdvantage = scrapy.Field()
     district = scrapy.Field()
     companyLabelList = scrapy.Field()
+    uid=scrapy.Field()
 
 
 class CompanyItem(scrapy.Item):

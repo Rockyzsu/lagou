@@ -4,7 +4,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from models import Jobs, DBSession
+from models import Jobs, DBSession,Company
 from items import LagouItem,CompanyItem
 
 class LagouPipeline(object):
@@ -31,6 +31,7 @@ class LagouPipeline(object):
                 education=item['education'],
                 positionAdvantage=item['positionAdvantage'],
                 district=item['district'],
+                uid=item['uid'],
                 companyLabelList=item['companyLabelList'],
             )
 
@@ -44,6 +45,14 @@ class LagouPipeline(object):
         # self.session.close()
 
         elif isinstance(item,CompanyItem):
-            pass
-
+            obj=Company(
+                companyId=item['companyId'],
+                companyName=item['companyFullName']
+            )
+            self.session.add(obj)
+            try:
+                self.session.commit()
+            except Exception, e:
+                print e
+                self.session.rollback()
         return item
