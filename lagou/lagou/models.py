@@ -11,13 +11,12 @@ from sqlalchemy import DDL
 engine = create_engine('mysql+pymysql://root:123456z@localhost:3306/db_parker?charset=utf8')
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
-#session = DBSession()
 
 class Jobs(Base):
     __tablename__ = 'tb_jobs'
     id = Column(Integer, primary_key=True)
     companyId = Column(Integer)
-    positionId = Column(Integer)
+    positionId = Column(Integer,index=True)
     jobNature = Column(Text)
     companyName = Column(String(160))
     financeStage = Column(String(160))
@@ -25,7 +24,7 @@ class Jobs(Base):
     companySize = Column(String(160))
     industryField = Column(String(160))
     positionName = Column(String(160),index=True)
-    city = Column(String(160))
+    city = Column(String(160),index=True)
     createTime = Column(String(80),index=True)
     salary_low = Column(Integer,index=True)
     salary_high = Column(Integer,index=True)
@@ -34,9 +33,9 @@ class Jobs(Base):
     positionAdvantage = Column(String(160))
     district = Column(String(160))
     companyLabelList = Column(String(320))
-    uid= Column(Integer,ForeignKey('tb_company.companyId'))
+    #uid= Column(Integer,ForeignKey('tb_company.companyId'))
 
-
+'''
 class Company(Base):
     __tablename__ = 'tb_company'
 
@@ -44,6 +43,6 @@ class Company(Base):
     companyId = Column(Integer,index=True,primary_key=True)
     companyName = Column(String(200))
     jobs = relationship('Jobs',backref='jobinfo')
-
+'''
 
 Base.metadata.create_all(engine)

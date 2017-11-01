@@ -2,10 +2,12 @@
 import json
 
 import re
+
+import datetime
 from lagou.items import LagouItem
 import scrapy
-from lagou.models import DBSession, Jobs, Company
-
+from lagou.models import DBSession, Jobs
+import redis
 
 class lagouspider(scrapy.Spider):
     name = 'lagou'
@@ -39,10 +41,11 @@ class lagouspider(scrapy.Spider):
                         "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1509081728"}
         self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
         self.session = DBSession()
+        self.pool=redis.Redis()
 
     def start_requests(self):
-        obj = self.session.query(Company).all()
-
+        #obj = self.session.query(Company).all()
+        obj = self.pool.keys()
         for i in obj:
             headers = {
                 'Origin': 'https://www.lagou.com',
@@ -55,11 +58,11 @@ class lagouspider(scrapy.Spider):
                 'Connection': 'keep-alive',
 
                 'Pragma': 'no-cache', 'Cache-Control': 'no-cache',
-                'Referer': 'https://www.lagou.com/gongsi/j%d.html' % i.companyId,
+                'Referer': 'https://www.lagou.com/gongsi/j%s.html' % i,
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             }
 
-            data = {'companyId': str(i.companyId),
+            data = {'companyId': str(i),
                     'positionFirstType': u'全部',
                     'schoolJob': 'false',
                     'pageNo': '2',
@@ -114,20 +117,42 @@ class lagouspider(scrapy.Spider):
             item['industryField'] = i.get('industryField')
             item['positionName'] = i.get('positionName')
             item['city'] = i.get('city')
-            item['createTime'] = i.get('createTime')
+            createTime= i.get('createTime')
             try:
-                s = i.get('salary')
-                if re.findall('K', s):
-                    s = s.replace('K', 'k')
-                item['salary_low'] = int(s.split('-')[0].replace('k', '000'))
-                item['salary_high'] = int(s.split('-')[1].replace('k', '000'))
+                if not re.search('2017',createTime):
+                    createTime=datetime.datetime.now().strftime('%Y-%m-%d') +' '+ createTime
+
+            except Exception,e:
+                print e
+                print createTime
+
+            item['createTime'] = createTime
+
+            s = i.get('salary')
+            try:
+                if re.search('-',s):
+                    if re.findall('K', s):
+                        s = s.replace('K', 'k')
+                    item['salary_low'] = int(s.split('-')[0].replace('k', '000'))
+                    item['salary_high'] = int(s.split('-')[1].replace('k', '000'))
+                elif re.search(u'以上',s):
+                    if re.findall('K', s):
+                        s = s.replace('K', 'k')
+
+                    item['salary_low'] = int(re.findall('(\d+)k',s)[0])
+                    item['salary_high'] = int(re.findall('(\d+)k',s)[0])
+
+
+
             except Exception, e:
+                print 'its salary'
+                print i.get('salary')
                 print e
             item['workYear'] = i.get('workYear')
             item['education'] = i.get('education')
             item['positionAdvantage'] = i.get('positionAdvantage')
             item['district'] = i.get('district')
             item['companyLabelList'] = ';'.join(i.get('companyLabelList'))
-            item['uid']=i.get('companyId')
+            #item['uid']=i.get('companyId')
 
             yield item

@@ -4,12 +4,14 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from models import Jobs, DBSession,Company
+from models import Jobs, DBSession
 from items import LagouItem,CompanyItem
-
+import redis
 class LagouPipeline(object):
     def __init__(self):
         self.session = DBSession()
+        self.pool =  redis.Redis(host='127.0.0.1',port=6379,db=0)
+
 
     def process_item(self, item, spider):
         if isinstance(item,LagouItem):
@@ -31,7 +33,7 @@ class LagouPipeline(object):
                 education=item['education'],
                 positionAdvantage=item['positionAdvantage'],
                 district=item['district'],
-                uid=item['uid'],
+                #uid=item['uid'],
                 companyLabelList=item['companyLabelList'],
             )
 
@@ -45,6 +47,8 @@ class LagouPipeline(object):
         # self.session.close()
 
         elif isinstance(item,CompanyItem):
+            # 公司信息存入mysql数据库
+            '''
             obj=Company(
                 companyId=item['companyId'],
                 companyName=item['companyFullName']
@@ -55,4 +59,9 @@ class LagouPipeline(object):
             except Exception, e:
                 print e
                 self.session.rollback()
+            '''
+
+            # 公司的数据存入redis
+            self.pool.set(item['companyId'],item['companyFullName'])
+
         return item

@@ -11,9 +11,12 @@ class CompanyInfo(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
-        self.totalCount = 56
+
+        #  获取更多城市，替换213 这个数字就可以， 根据不同城市填写
+        self.url = 'https://www.lagou.com/gongsi/216-0-0.json'
+
         self.datas = collections.OrderedDict({"first": "false",
-                                              "pn": "3",
+                                              "pn": "",
                                               "sortField": "0",
                                               "havemark": "0"}
                                              )
@@ -32,7 +35,6 @@ class CompanyInfo(scrapy.Spider):
                               'Referer': 'https://www.lagou.com/gongsi/j917.html',
                               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'}
 
-        self.url = 'https://www.lagou.com/gongsi/215-0-0.json'
         self.cookies = {"user_trace_token": "20160612223035-3a02d006-30aa-11e6-a343-5254005c3644",
                         "LGUID": "20160612223035-3a02d566-30aa-11e6-a343-5254005c3644",
                         "JSESSIONID": "ABAAABAACDBAAIA2AF78F3B190ED86CE3AD74D3F50F274F",
@@ -58,10 +60,12 @@ class CompanyInfo(scrapy.Spider):
     def start_requests(self):
         yield scrapy.http.Request(url='https://www.lagou.com/gongsi/', headers=self.first_headers,
                                   callback=self.next_request,
-                                  meta={'cookiejar': 1})
+                                  meta={'cookiejar': 1}
+                                  )
 
     def next_request(self, response):
         # print response.body
+        #公司没那么多，只需填一个小于100的
         for i in range(1, 100):
             self.datas['pn'] = str(i)
             meta = {'dont_redirect': True, 'handle_httpstatus_list': [302]}
