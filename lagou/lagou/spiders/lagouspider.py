@@ -14,6 +14,7 @@ class lagouspider(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
+        self.years = str(datetime.datetime.now().year)
         self.pool = redis.Redis(host='raspberrypi', port=6379, db=2)
         self.cookies = {"user_trace_token": "20160612223035-3a02d006-30aa-11e6-a343-5254005c3644",
                         "LGUID": "20160612223035-3a02d566-30aa-11e6-a343-5254005c3644",
@@ -118,12 +119,12 @@ class lagouspider(scrapy.Spider):
             item['city'] = i.get('city')
             createTime= i.get('createTime')
             try:
-                if not re.search('2017',createTime):
+                if not re.search(self.years,createTime):
                     createTime=datetime.datetime.now().strftime('%Y-%m-%d') +' '+ createTime
 
             except Exception,e:
                 print e
-                print createTime
+                # print createTime
 
             item['createTime'] = createTime
 
