@@ -14,7 +14,7 @@ class lagouspider(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
-
+        self.pool = redis.Redis(host='raspberrypi', port=6379, db=2)
         self.cookies = {"user_trace_token": "20160612223035-3a02d006-30aa-11e6-a343-5254005c3644",
                         "LGUID": "20160612223035-3a02d566-30aa-11e6-a343-5254005c3644",
                         "SEARCH_ID": "08c78425fe834aad93ccda9367e90b39",
@@ -40,8 +40,8 @@ class lagouspider(scrapy.Spider):
                         "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1507978370,1508072067,1509002344,1509080246",
                         "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1509081728"}
         self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
-        self.session = DBSession()
-        self.pool=redis.Redis()
+        # self.session = DBSession()
+        #self.pool=redis.Redis()
 
     def start_requests(self):
         #obj = self.session.query(Company).all()
@@ -65,7 +65,7 @@ class lagouspider(scrapy.Spider):
             data = {'companyId': str(i),
                     'positionFirstType': u'全部',
                     'schoolJob': 'false',
-                    'pageNo': '2',
+                    'pageNo': '1',
                     'pageSize': '10'}
             yield scrapy.http.FormRequest(
                 url=self.url,
@@ -78,7 +78,6 @@ class lagouspider(scrapy.Spider):
             )
 
     def parse(self, response):
-        print 'in parse'
         js = json.loads(response.body)
         headers = response.meta['headers']
         data = response.meta['data']

@@ -13,7 +13,7 @@ class CompanyInfo(scrapy.Spider):
     def __init__(self):
 
         #  获取更多城市，替换213 这个数字就可以， 根据不同城市填写
-        self.url = 'https://www.lagou.com/gongsi/216-0-0.json'
+        self.url = 'https://www.lagou.com/gongsi/215-0-0.json'
 
         self.datas = collections.OrderedDict({"first": "false",
                                               "pn": "",

@@ -8,7 +8,7 @@ from sqlalchemy import Column, String, DateTime, Integer, Text,ForeignKey,Index
 #from mayidaili import useproxy
 from sqlalchemy import event
 from sqlalchemy import DDL
-engine = create_engine('mysql+pymysql://root:123456z@localhost:3306/db_parker?charset=utf8')
+engine = create_engine('mysql+pymysql://rocky:xxxx@raspberrypi:3306/db_rocky?charset=utf8')
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -33,6 +33,7 @@ class Jobs(Base):
     positionAdvantage = Column(String(160))
     district = Column(String(160))
     companyLabelList = Column(String(320))
+    updated = Column(DateTime,default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     #uid= Column(Integer,ForeignKey('tb_company.companyId'))
 
 '''

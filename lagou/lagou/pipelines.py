@@ -7,42 +7,46 @@
 from models import Jobs, DBSession
 from items import LagouItem,CompanyItem
 import redis
+from sqlalchemy import and_
 class LagouPipeline(object):
     def __init__(self):
         self.session = DBSession()
-        self.pool =  redis.Redis(host='127.0.0.1',port=6379,db=0)
+        self.pool =  redis.Redis(host='raspberrypi',port=6379,db=2)
 
 
     def process_item(self, item, spider):
         if isinstance(item,LagouItem):
-            obj = Jobs(
-                companyId=item['companyId'],
-                positionId=item['positionId'],
-                jobNature=item['jobNature'],
-                companyName=item['companyName'],
-                financeStage=item['financeStage'],
-                companyFullName=item['companyFullName'],
-                companySize=item['companySize'],
-                industryField=item['industryField'],
-                positionName=item['positionName'],
-                city=item['city'],
-                createTime=item['createTime'],
-                salary_low=item['salary_low'],
-                salary_high=item['salary_high'],
-                workYear=item['workYear'],
-                education=item['education'],
-                positionAdvantage=item['positionAdvantage'],
-                district=item['district'],
-                #uid=item['uid'],
-                companyLabelList=item['companyLabelList'],
-            )
 
-            self.session.add(obj)
-            try:
-                self.session.commit()
-            except Exception, e:
-                print e
-                self.session.rollback()
+            if  self.session.query(Jobs).filter(Jobs.positionId==item['positionId'], Jobs.companyId==item['companyId']).first():
+                pass
+            else:
+                obj = Jobs(
+                    companyId=item['companyId'],
+                    positionId=item['positionId'],
+                    jobNature=item['jobNature'],
+                    companyName=item['companyName'],
+                    financeStage=item['financeStage'],
+                    companyFullName=item['companyFullName'],
+                    companySize=item['companySize'],
+                    industryField=item['industryField'],
+                    positionName=item['positionName'],
+                    city=item['city'],
+                    createTime=item['createTime'],
+                    salary_low=item['salary_low'],
+                    salary_high=item['salary_high'],
+                    workYear=item['workYear'],
+                    education=item['education'],
+                    positionAdvantage=item['positionAdvantage'],
+                    district=item['district'],
+                    # uid=item['uid'],
+                    companyLabelList=item['companyLabelList'],
+                )
+                self.session.add(obj)
+                try:
+                    self.session.commit()
+                except Exception, e:
+                    print e
+                    self.session.rollback()
 
         # self.session.close()
 
