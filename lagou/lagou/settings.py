@@ -13,8 +13,8 @@ BOT_NAME = 'lagou'
 
 SPIDER_MODULES = ['lagou.spiders']
 NEWSPIDER_MODULE = 'lagou.spiders'
-
-
+REDIS_HOST = 'raspberrypi'
+MYSQL_HOST='raspberrypi'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'lagou (+http://www.yourdomain.com)'
 

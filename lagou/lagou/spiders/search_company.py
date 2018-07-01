@@ -2,11 +2,12 @@
 import requests
 import redis
 import MySQLdb
-pool = redis.Redis(host='raspberrypi',port=6379,db=2)
+from lagou.settings import REDIS_HOST,MYSQL_HOST
+pool = redis.Redis(host=REDIS_HOST,port=6379,db=3)
 def get_mysql_conn(db):
 
 
-    conn = MySQLdb.connect('raspberrypi', 'rocky', '123456z', db, charset='utf8')
+    conn = MySQLdb.connect(MYSQL_HOST, 'rocky', '123456z', db, charset='utf8')
 
     return conn
 

@@ -8,10 +8,11 @@ from models import Jobs, DBSession
 from items import LagouItem,CompanyItem
 import redis
 from sqlalchemy import and_
+from settings import REDIS_HOST
 class LagouPipeline(object):
     def __init__(self):
         self.session = DBSession()
-        self.pool =  redis.Redis(host='raspberrypi',port=6379,db=2)
+        self.pool =  redis.Redis(host=REDIS_HOST,port=6379,db=3)
 
 
     def process_item(self, item, spider):

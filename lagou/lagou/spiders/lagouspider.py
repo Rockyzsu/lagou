@@ -8,14 +8,14 @@ from lagou.items import LagouItem
 import scrapy
 from lagou.models import DBSession, Jobs
 import redis
-
+from lagou.settings import REDIS_HOST
 class lagouspider(scrapy.Spider):
     name = 'lagou'
     allowed_domains = ['lagou.com']
 
     def __init__(self):
         self.years = str(datetime.datetime.now().year)
-        self.pool = redis.Redis(host='raspberrypi', port=6379, db=2)
+        self.pool = redis.Redis(host=REDIS_HOST, port=6379, db=2)
         self.cookies = {"user_trace_token": "20160612223035-3a02d006-30aa-11e6-a343-5254005c3644",
                         "LGUID": "20160612223035-3a02d566-30aa-11e6-a343-5254005c3644",
                         "SEARCH_ID": "08c78425fe834aad93ccda9367e90b39",
