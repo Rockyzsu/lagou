@@ -2,11 +2,11 @@
 import requests
 import redis
 import MySQLdb
-pool = redis.Redis(host='raspberrypi',port=6379,db=2)
+pool = redis.Redis(host='localhost',port=6379,db=3)
 def get_mysql_conn(db):
 
 
-    conn = MySQLdb.connect('raspberrypi', 'rocky', '123456z', db, charset='utf8')
+    conn = MySQLdb.connect('localhost', 'root', '123456z', db, charset='utf8')
 
     return conn
 
@@ -24,7 +24,7 @@ def find_positionName():
 
 def search(name):
 		url = r'https://www.lagou.com/jobs/positionAjax.json?city=%E6%B7%B1%E5%9C%B3&needAddtionalResult=false'
-		print url
+		print(url)
 		headers = {'Origin': 'https://www.lagou.com', 
 		'Content-Length': '38', 'Accept-Language': 'zh-CN,zh;q=0.9', 
 		'Accept-Encoding': 'gzip,deflate,br', 'X-Anit-Forge-Code': '0', 
@@ -41,7 +41,7 @@ def search(name):
 		page = 1
 		break_out=False
 		while 1:
-			print 'page {}'.format(page)
+			print('page {}'.format(page))
 			data = {
 			'first': 'false',
 			'pn': '1',
@@ -51,8 +51,8 @@ def search(name):
 			r = requests.post(url, headers=headers,data = data)
 			try:
 				js = r.json()
-			except Exception,e:
-				print e
+			except Exception as e:
+				print(e)
 				break
 			# print js.get('content')
 
@@ -68,14 +68,14 @@ def search(name):
 				fullname = i.get('companyFullName')
 				companyId = i.get('companyId')
 				# if len(companyId)==0:
-				print type(companyId)
+				print(type(companyId))
 				if companyId is None:
 					break_out = True
 				# print fullname,companyId
 				try:
 					pool.set(companyId,fullname)
-				except Exception,e:
-					print e
+				except Exception as e:
+					print(e)
 
 			if js.get('content').get('positionResult').get('result') is None:
 				break
