@@ -11,7 +11,7 @@ class CompanyInfo(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
-        self.citys=[215,213,230]
+        self.citys=[213,2,3,6,184,252]
         #  获取更多城市，替换213 这个数字就可以， 根据不同城市填写
         self.url = 'https://www.lagou.com/gongsi/{}-0-0.json'
 
@@ -74,13 +74,13 @@ class CompanyInfo(scrapy.Spider):
     def parse_item(self, response):
         try:
             js = json.loads(response.body)
+            print js
             # print js
-            # print js
-        except Exception as e:
-            print(e)
+        except Exception, e:
+            print e
             return
         if len(js['result']) == 0:
-            print('empty')
+            print 'empty'
             return
         for i in js['result']:
             item = CompanyItem()

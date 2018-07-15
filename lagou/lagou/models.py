@@ -8,7 +8,7 @@ from sqlalchemy import Column, String, DateTime, Integer, Text,ForeignKey,Index
 #from mayidaili import useproxy
 from sqlalchemy import event
 from sqlalchemy import DDL
-engine = create_engine('mysql+pymysql://root:123456z@localhost:3306/db_rocky?charset=utf8')
+engine = create_engine('mysql+pymysql://rocky:xxxx@raspberrypi:3306/db_rocky?charset=utf8')
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 

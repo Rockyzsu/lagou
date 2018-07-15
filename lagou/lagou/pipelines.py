@@ -4,14 +4,14 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from lagou.models import Jobs, DBSession
-from lagou.items import LagouItem,CompanyItem
+from models import Jobs, DBSession
+from items import LagouItem,CompanyItem
 import redis
 from sqlalchemy import and_
 class LagouPipeline(object):
     def __init__(self):
         self.session = DBSession()
-        self.pool =  redis.Redis(host='localhost',port=6379,db=3)
+        self.pool =  redis.Redis(host='raspberrypi',port=6379,db=2)
 
 
     def process_item(self, item, spider):
@@ -44,8 +44,8 @@ class LagouPipeline(object):
                 self.session.add(obj)
                 try:
                     self.session.commit()
-                except Exception as e:
-                    print(e)
+                except Exception, e:
+                    print e
                     self.session.rollback()
 
         # self.session.close()

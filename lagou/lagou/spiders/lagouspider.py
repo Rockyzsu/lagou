@@ -9,45 +9,43 @@ import scrapy
 from lagou.models import DBSession, Jobs
 import redis
 
-
 class lagouspider(scrapy.Spider):
     name = 'lagou'
     allowed_domains = ['lagou.com']
 
     def __init__(self):
         self.years = str(datetime.datetime.now().year)
-        self.pool = redis.Redis(host='localhost', port=6379, db=3)
-        self.cookies = {"user_trace_token": "20171121112654-d2256ffd-ce6b-11e7-9971-5254005c3644",
-                        "LGUID": "20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644",
-                        "_ga": "GA1.2.1514235968.1511234812",
-                        "LG_LOGIN_USER_ID": "dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced",
-                        "showExpriedIndex": "1",
-                        "showExpriedCompanyHome": "1",
-                        "showExpriedMyPublish": "1",
-                        "hasDeliver": "185",
-                        "index_location_city": "%E5%85%A8%E5%9B%BD",
-                        "JSESSIONID": "ABAAABAAAIAACBI2ECE0109F68209B809158B7527D94550",
-                        "_gat": "1",
-                        "LGSID": "20180630002925-9647d11f-7bb9-11e8-9775-5254005c3644",
+        self.pool = redis.Redis(host='raspberrypi', port=6379, db=2)
+        self.cookies = {"user_trace_token": "20160612223035-3a02d006-30aa-11e6-a343-5254005c3644",
+                        "LGUID": "20160612223035-3a02d566-30aa-11e6-a343-5254005c3644",
+                        "SEARCH_ID": "08c78425fe834aad93ccda9367e90b39",
+                        "JSESSIONID": "ABAAABAACDBAAIABC4729F0A9CEC95D283FC7071EF87E1E",
                         "PRE_UTM": "",
                         "PRE_HOST": "",
                         "PRE_SITE": "",
                         "PRE_LAND": "https%3A%2F%2Fwww.lagou.com%2F",
-                        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1528596582,1528982025,1530191868,1530289763",
-                        "_gid": "GA1.2.174424791.1530289763",
                         "_putrc": "DFAF58A586D854B0",
                         "login": "true",
                         "unick": "%E9%99%88%E9%94%A6%E4%BC%9F",
-                        "gate_login_token": "226fd311bb36716586af059cad241b17f6e826f13d4bd66c",
+                        "showExpriedIndex": "1",
+                        "showExpriedCompanyHome": "1",
+                        "showExpriedMyPublish": "1",
+                        "hasDeliver": "138",
                         "TG-TRACK-CODE": "index_company",
-                        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1530289774",
-                        "LGRID": "20180630002937-9d3e7818-7bb9-11e8-9775-5254005c3644", }
+                        "index_location_city": "%E6%B7%B1%E5%9C%B3",
+                        "_gat": "1",
+                        "_gid": "GA1.2.1667060466.1509002344",
+                        "_ga": "GA1.2.499625224.1465741835",
+                        "LGSID": "20171027125724-52ba86b9-bad3-11e7-a9d9-525400f775ce",
+                        "LGRID": "20171027132206-c5e392f3-bad6-11e7-a9dc-525400f775ce",
+                        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1507978370,1508072067,1509002344,1509080246",
+                        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1509081728"}
         self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
         # self.session = DBSession()
-        # self.pool=redis.Redis()
+        #self.pool=redis.Redis()
 
     def start_requests(self):
-        # obj = self.session.query(Company).all()
+        #obj = self.session.query(Company).all()
         obj = self.pool.keys()
         for i in obj:
             headers = {
@@ -81,7 +79,6 @@ class lagouspider(scrapy.Spider):
             )
 
     def parse(self, response):
-        print(response.text)
         js = json.loads(response.body)
         headers = response.meta['headers']
         data = response.meta['data']
@@ -89,7 +86,7 @@ class lagouspider(scrapy.Spider):
         page = (totalCount + 10) / 10
         for i in range(1, page + 1):
             data['pageNo'] = str(i)
-            print('page: ', i)
+            print 'page: ', i
             yield scrapy.FormRequest(url=self.url,
                                      headers=headers,
                                      callback=self.parse_data,
@@ -97,7 +94,6 @@ class lagouspider(scrapy.Spider):
                                      cookies=self.cookies, dont_filter=True)
 
     def parse_data(self, response):
-        # print(response)
         js = json.loads(response.body)
 
         try:
@@ -106,7 +102,7 @@ class lagouspider(scrapy.Spider):
             return
 
         if not results:
-            print('empty')
+            print 'empty'
             return
         for i in results:
             # 13k-25k
@@ -121,42 +117,42 @@ class lagouspider(scrapy.Spider):
             item['industryField'] = i.get('industryField')
             item['positionName'] = i.get('positionName')
             item['city'] = i.get('city')
-            createTime = i.get('createTime')
+            createTime= i.get('createTime')
             try:
-                if not re.search(self.years, createTime):
-                    createTime = datetime.datetime.now().strftime('%Y-%m-%d') + ' ' + createTime
+                if not re.search(self.years,createTime):
+                    createTime=datetime.datetime.now().strftime('%Y-%m-%d') +' '+ createTime
 
-            except Exception as e:
-                print(e)
+            except Exception,e:
+                print e
                 # print createTime
 
             item['createTime'] = createTime
 
             s = i.get('salary')
             try:
-                if re.search('-', s):
+                if re.search('-',s):
                     if re.findall('K', s):
                         s = s.replace('K', 'k')
                     item['salary_low'] = int(s.split('-')[0].replace('k', '000'))
                     item['salary_high'] = int(s.split('-')[1].replace('k', '000'))
-                elif re.search(u'以上', s):
+                elif re.search(u'以上',s):
                     if re.findall('K', s):
                         s = s.replace('K', 'k')
 
-                    item['salary_low'] = int(re.findall('(\d+)k', s)[0])
-                    item['salary_high'] = int(re.findall('(\d+)k', s)[0])
+                    item['salary_low'] = int(re.findall('(\d+)k',s)[0])
+                    item['salary_high'] = int(re.findall('(\d+)k',s)[0])
 
 
 
-            except Exception as e:
-                print('its salary')
-                print(i.get('salary'))
-                print(e)
+            except Exception, e:
+                print 'its salary'
+                print i.get('salary')
+                print e
             item['workYear'] = i.get('workYear')
             item['education'] = i.get('education')
             item['positionAdvantage'] = i.get('positionAdvantage')
             item['district'] = i.get('district')
             item['companyLabelList'] = ';'.join(i.get('companyLabelList'))
-            # item['uid']=i.get('companyId')
+            #item['uid']=i.get('companyId')
 
             yield item
