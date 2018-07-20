@@ -4,21 +4,23 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from models import Jobs, DBSession
-from items import LagouItem,CompanyItem
+from lagou.models import Jobs, DBSession
+from lagou.items import LagouItem, CompanyItem
 import redis
 from sqlalchemy import and_
+from lagou import settings
+
 class LagouPipeline(object):
     def __init__(self):
         self.session = DBSession()
-        self.pool =  redis.Redis(host='raspberrypi',port=6379,db=2)
-
+        self.pool = redis.Redis(host=settings.REDIS_HOST_FIND, port=6379, db=settings.REDIS_DB_FIND)
 
     def process_item(self, item, spider):
-        if isinstance(item,LagouItem):
+        if isinstance(item, LagouItem):
 
-            if  self.session.query(Jobs).filter(Jobs.positionId==item['positionId'], Jobs.companyId==item['companyId']).first():
-                pass
+            if self.session.query(Jobs).filter(Jobs.positionId == item['positionId'],
+                                               Jobs.companyId == item['companyId']).first():
+                return item
             else:
                 obj = Jobs(
                     companyId=item['companyId'],
@@ -44,13 +46,11 @@ class LagouPipeline(object):
                 self.session.add(obj)
                 try:
                     self.session.commit()
-                except Exception, e:
-                    print e
+                except Exception as e:
+                    print(e)
                     self.session.rollback()
 
-        # self.session.close()
-
-        elif isinstance(item,CompanyItem):
+        elif isinstance(item, CompanyItem):
             # 公司信息存入mysql数据库
             '''
             obj=Company(
@@ -66,6 +66,7 @@ class LagouPipeline(object):
             '''
 
             # 公司的数据存入redis
-            self.pool.set(item['companyId'],item['companyFullName'])
+            self.pool.set(item['companyId'], item['companyFullName'])
 
         return item
+
