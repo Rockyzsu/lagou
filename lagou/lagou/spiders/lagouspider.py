@@ -16,25 +16,20 @@ class lagouspider(scrapy.Spider):
 
     def __init__(self):
         self.years = str(datetime.datetime.now().year)
-        self.pool = redis.Redis(host=settings.REDIS_HOST, port=6379, db=settings.REDIS_DB_FIND)
+        self.pool = redis.Redis(host=settings.REDIS_HOST, port=6379, db=settings.REDIS_DB_FIND,decode_responses=True)
         self.cookies = {
-            "_ga": "GA1.2.83307641.1530287182",
-            "user_trace_token": "20180629234623-92fa9b1e-7bb3-11e8-9775-5254005c3644",
-            "LGUID": "20180629234623-92fa9eb7-7bb3-11e8-9775-5254005c3644",
+            "user_trace_token": "20171121112654-d2256ffd-ce6b-11e7-9971-5254005c3644",
+            "LGUID": "20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644",
+            "_ga": "GA1.2.1514235968.1511234812",
+            "LG_LOGIN_USER_ID": "dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced",
             "index_location_city": "%E5%85%A8%E5%9B%BD",
-            "JSESSIONID": "ABAAABAACBHABBI4C80036F8C017CE0A5AFB58686174931",
-            "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1530287183,1531805505",
-            "TG-TRACK-CODE": "index_search",
-            "_gid": "GA1.2.1182757649.1532098646",
-            "SEARCH_ID": "df49e5d9a1f843ae8cb7b21a8025b56a",
-            "_gat": "1",
-            "LGSID": "20180720235410-245d6175-8c35-11e8-9ff4-525400f775ce",
-            "PRE_UTM": "",
-            "PRE_HOST": "",
-            "PRE_SITE": "https%3A%2F%2Fwww.lagou.com%2Fjobs%2Flist_%25E6%2596%25B0%25E5%259B%25BD%25E9%2583%25BD%3FlabelWords%3D%26fromSearch%3Dtrue%26suginput%3D",
-            "PRE_LAND": "https%3A%2F%2Fwww.lagou.com%2Fgongsi%2F17433.html",
-            "LGRID": "20180720235502-4351cae3-8c35-11e8-9e4d-5254005c3644",
-            "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1532102102"}
+            "JSESSIONID": "ABAAABAACEBACDGCA1C30CEA6B9D058C206196A1051D923",
+            "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1530191868,1530289763,1530364609,1532137298",
+            "_gid": "GA1.2.336535918.1532137304",
+            "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1532137332",
+            "LGRID": "20180721094213-4a720817-8c87-11e8-a017-525400f775ce",
+            "TG-TRACK-CODE": "hpage_code",
+        }
         self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
         # self.session = DBSession()
         # self.pool=redis.Redis()
@@ -44,28 +39,25 @@ class lagouspider(scrapy.Spider):
         obj = self.pool.keys()
         for i in obj:
             headers = {
-                # 'Accept': 'application/json,text/javascript,*/*;q=0.01',
-                #        'Accept-Encoding': 'gzip,deflate,br',
-                       'Accept-Language': 'zh,en;q=0.9,en-US;q=0.8', 'Cache-Control': 'no-cache',
-                       'Connection': 'keep-alive',
-                       # 'Content-Length': '89',
-                       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                       # 'Cookie': '_ga=GA1.2.83307641.1530287182;user_trace_token=20180629234623-92fa9b1e-7bb3-11e8-9775-5254005c3644;LGUID=20180629234623-92fa9eb7-7bb3-11e8-9775-5254005c3644;index_location_city=%E5%85%A8%E5%9B%BD;JSESSIONID=ABAAABAACBHABBI4C80036F8C017CE0A5AFB58686174931;Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1530287183,1531805505;TG-TRACK-CODE=index_search;_gid=GA1.2.1182757649.1532098646;SEARCH_ID=df49e5d9a1f843ae8cb7b21a8025b56a;_gat=1;LGSID=20180720235410-245d6175-8c35-11e8-9ff4-525400f775ce;PRE_UTM=;PRE_HOST=;PRE_SITE=https%3A%2F%2Fwww.lagou.com%2Fjobs%2Flist_%25E6%2596%25B0%25E5%259B%25BD%25E9%2583%25BD%3FlabelWords%3D%26fromSearch%3Dtrue%26suginput%3D;PRE_LAND=https%3A%2F%2Fwww.lagou.com%2Fgongsi%2F17433.html;LGRID=20180720235502-4351cae3-8c35-11e8-9e4d-5254005c3644;Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1532102102',
-                       'Host': 'www.lagou.com',
-                       'Origin': 'https://www.lagou.com', 'Pragma': 'no-cache',
-                       # 'Referer': 'https://www.lagou.com/gongsi/j32687.html',
-                       'User-Agent': 'Mozilla/5.0(WindowsNT6.1;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/67.0.3396.99Safari/537.36',
-                       # 'X-Anit-Forge-Code': '86010399', 'X-Anit-Forge-Token': 'abb50957-4555-4f33-9bad-6a0359261858',
-                       # 'X-Requested-With': 'XMLHttpRequest',
-                       'Referer': 'https://www.lagou.com/gongsi/j%s.html' % i,
-                       }
+                'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding': 'gzip,deflate,br',
+                'Accept-Language': 'zh-CN,zh;q=0.9', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive',
+                # 'Content-Length': '89',
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                'Cookie': 'user_trace_token=20171121112654-d2256ffd-ce6b-11e7-9971-5254005c3644;LGUID=20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644;_ga=GA1.2.1514235968.1511234812;LG_LOGIN_USER_ID=dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced;index_location_city=%E5%85%A8%E5%9B%BD;JSESSIONID=ABAAABAACEBACDGCA1C30CEA6B9D058C206196A1051D923;Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1530191868,1530289763,1530364609,1532137298;_gid=GA1.2.336535918.1532137304;Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1532137332;LGRID=20180721094213-4a720817-8c87-11e8-a017-525400f775ce;TG-TRACK-CODE=hpage_code',
+                'Host': 'www.lagou.com', 'Origin': 'https://www.lagou.com', 'Pragma': 'no-cache',
+                'Referer': 'https://www.lagou.com/gongsi/j{}.html'.format(i),
+                'User-Agent': 'Mozilla/5.0(WindowsNT6.1;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/65.0.3325.162Safari/537.36',
+                'X-Anit-Forge-Code': '15954614', 'X-Anit-Forge-Token': '4b88c137-e592-4a33-9e1c-b35c47fd76a4',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
 
             data = {
                 'companyId': str(i),
-                'positionFirstType': u'全部',
+                'positionFirstType': '全部',
                 'schoolJob': 'false',
                 'pageNo': '1',
-                'pageSize': '10'}
+                'pageSize': '10'
+            }
             yield scrapy.http.FormRequest(
                 url=self.url,
                 headers=headers,
@@ -73,8 +65,8 @@ class lagouspider(scrapy.Spider):
                 callback=self.parse,
                 cookies=self.cookies,
                 dont_filter=True,
-                meta={'cookiejar': True,
-                      'headers': headers, 'data': data}
+                meta={'cookiejar':True,
+                    'headers': headers, 'data': data}
             )
 
     def parse(self, response):
