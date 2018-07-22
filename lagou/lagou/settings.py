@@ -10,12 +10,12 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'lagou'
-REDIS_HOST_FIND = '10.18.6.101'
+REDIS_HOST_FIND = 'localhost'
 REDIS_DB_FIND = 6
-MYSQL_HOST='l1002664.nexgo.cn'
-MYSQL_USER='root'
+MYSQL_HOST='raspberrypi'
+MYSQL_USER='rocky'
 MYSQL_PASSWD='123456z'
-REDIS_HOST='10.18.6.101'
+REDIS_HOST='localhost'
 SPIDER_MODULES = ['lagou.spiders']
 NEWSPIDER_MODULE = 'lagou.spiders'
 

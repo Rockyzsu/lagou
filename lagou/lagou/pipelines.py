@@ -4,11 +4,12 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
-from lagou.models import Jobs, DBSession
-from lagou.items import LagouItem, CompanyItem
+from lagou.models import Jobs, DBSession,JobDetails
+from lagou.items import LagouItem, CompanyItem, JobDetailsItem
 import redis
 from sqlalchemy import and_
 from lagou import settings
+
 
 class LagouPipeline(object):
     def __init__(self):
@@ -68,5 +69,17 @@ class LagouPipeline(object):
             # 公司的数据存入redis
             self.pool.set(item['companyId'], item['companyFullName'])
 
+        elif isinstance(item, JobDetailsItem):
+            obj = JobDetails(
+                positionId=item['positionId'],
+                advantage=item['advantage'],
+                description=item['description'],
+                address=item['address'],
+            )
+            self.session.add(obj)
+            try:
+                self.session.commit()
+            except Exception as e:
+                print(e)
+                self.session.rollback()
         return item
-

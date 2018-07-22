@@ -35,3 +35,9 @@ class LagouItem(scrapy.Item):
 class CompanyItem(scrapy.Item):
     companyId=scrapy.Field()
     companyFullName=scrapy.Field()
+
+class JobDetailsItem(scrapy.Item):
+    positionId=scrapy.Field()
+    advantage=scrapy.Field()
+    description=scrapy.Field()
+    address=scrapy.Field()

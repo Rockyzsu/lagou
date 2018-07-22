@@ -9,7 +9,7 @@ from sqlalchemy import Column, String, DateTime, Integer, Text,ForeignKey,Index
 from sqlalchemy import event
 from sqlalchemy import DDL
 from lagou import settings
-engine = create_engine('mysql+pymysql://root:{}@localhost:3306/db_rocky?charset=utf8'.format(settings.MYSQL_PASSWD))
+engine = create_engine('mysql+pymysql://{}:{}@{}:3306/db_rocky?charset=utf8'.format(settings.MYSQL_USER,settings.MYSQL_PASSWD,settings.MYSQL_HOST))
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -46,5 +46,15 @@ class Company(Base):
     companyName = Column(String(200))
     jobs = relationship('Jobs',backref='jobinfo')
 '''
+class JobDetails(Base):
+
+    __tablename__ = 'tb_jobs_details'
+    id = Column(Integer, primary_key=True,autoincrement=True)
+    positionId = Column(String(30), index=True)
+    advantage=Column(Text)
+    description=Column(Text)
+    address=Column(Text)
+
+    updated = Column(DateTime, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 Base.metadata.create_all(engine)
