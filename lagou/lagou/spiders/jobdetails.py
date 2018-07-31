@@ -5,11 +5,11 @@ import scrapy
 import redis
 from lagou.models import Jobs, DBSession
 from lagou.items import JobDetailsItem
-
+from lagou import settings
 
 class JobDetails(scrapy.Spider):
     name = 'job_details'
-    r = redis.StrictRedis('localhost', port=6379, db=7, decode_responses=True)
+    r = redis.StrictRedis(settings.REDIS_HOST, port=6379, db=7, decode_responses=True)
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Accept-Encoding': 'gzip,deflate,br',
@@ -52,9 +52,9 @@ class JobDetails(scrapy.Spider):
 
 
 def upload_jobid():
-    r = redis.StrictRedis('localhost', port=6379, db=7, decode_responses=True)
+    r = redis.StrictRedis(settings.REDIS_HOST, port=6379, db=7, decode_responses=True)
     session = DBSession()
-    obj = session.query(Jobs.positionId).all()[:50]
+    obj = session.query(Jobs.positionId).all()
     for i in obj:
         r.lpush('lagou_jobID', i[0])
 

@@ -10,12 +10,12 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'lagou'
-REDIS_HOST_FIND = 'localhost'
+REDIS_HOST_FIND = '10.18.6.101'
 REDIS_DB_FIND = 6
-MYSQL_HOST='raspberrypi'
-MYSQL_USER='rocky'
+MYSQL_HOST='localhost'
+MYSQL_USER='root'
 MYSQL_PASSWD='123456z'
-REDIS_HOST='localhost'
+REDIS_HOST='10.18.6.101'
 SPIDER_MODULES = ['lagou.spiders']
 NEWSPIDER_MODULE = 'lagou.spiders'
 
@@ -31,7 +31,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
