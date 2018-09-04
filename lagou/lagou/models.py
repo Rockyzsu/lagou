@@ -9,7 +9,8 @@ from sqlalchemy import Column, String, DateTime, Integer, Text,ForeignKey,Index
 from sqlalchemy import event
 from sqlalchemy import DDL
 from lagou import settings
-engine = create_engine('mysql+pymysql://{}:{}@{}:3306/db_rocky?charset=utf8'.format(settings.MYSQL_USER,settings.MYSQL_PASSWD,settings.MYSQL_HOST))
+from lagou import config
+engine = create_engine('mysql+pymysql://{}:{}@{}:3306/db_rocky?charset=utf8'.format(config.MYSQL_USER,config.MYSQL_PASSWD,config.MYSQL_HOST))
 DBSession = sessionmaker(bind=engine)
 Base = declarative_base()
 

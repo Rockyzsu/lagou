@@ -8,6 +8,7 @@ from lagou.models import Jobs, DBSession,JobDetails
 from lagou.items import LagouItem, CompanyItem, JobDetailsItem
 import redis
 from sqlalchemy import and_
+from lagou import config
 from lagou import settings
 
 
