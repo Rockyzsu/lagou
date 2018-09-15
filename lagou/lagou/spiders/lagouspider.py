@@ -18,7 +18,7 @@ class lagouspider(scrapy.Spider):
         self.years = str(datetime.datetime.now().year)
         self.pool = redis.Redis(host=settings.REDIS_HOST, port=6379, db=settings.REDIS_DB_FIND,decode_responses=True)
         self.cookies = {
-            "user_trace_token": "20171121112654-d2256ffd-ce6b-11e7-9971-5254005c3644",
+            "user_trace_token": "20171121112654-d2256ffd-ce6b-11e 7-9971-5254005c3644",
             "LGUID": "20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644",
             "_ga": "GA1.2.1514235968.1511234812",
             "LG_LOGIN_USER_ID": "dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced",
