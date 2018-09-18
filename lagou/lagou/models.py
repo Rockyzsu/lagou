@@ -53,6 +53,7 @@ class JobDetails(Base):
     id = Column(Integer, primary_key=True,autoincrement=True)
     positionId = Column(String(30), index=True)
     advantage=Column(Text)
+    jobTitle=Column(Text)
     description=Column(Text)
     address=Column(Text)
 

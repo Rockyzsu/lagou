@@ -14,25 +14,25 @@ class lagouspider(scrapy.Spider):
     name = 'lagou'
     allowed_domains = ['lagou.com']
 
-    def __init__(self):
-        self.years = str(datetime.datetime.now().year)
-        self.pool = redis.Redis(host=settings.REDIS_HOST, port=6379, db=settings.REDIS_DB_FIND,decode_responses=True)
-        self.cookies = {
-            "user_trace_token": "20171121112654-d2256ffd-ce6b-11e 7-9971-5254005c3644",
-            "LGUID": "20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644",
-            "_ga": "GA1.2.1514235968.1511234812",
-            "LG_LOGIN_USER_ID": "dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced",
-            "index_location_city": "%E5%85%A8%E5%9B%BD",
-            "JSESSIONID": "ABAAABAACEBACDGCA1C30CEA6B9D058C206196A1051D923",
-            "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1530191868,1530289763,1530364609,1532137298",
-            "_gid": "GA1.2.336535918.1532137304",
-            "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1532137332",
-            "LGRID": "20180721094213-4a720817-8c87-11e8-a017-525400f775ce",
-            "TG-TRACK-CODE": "hpage_code",
-        }
-        self.url = 'https://www.lagou.com/gongsi/searchPosition.json'
-        # self.session = DBSession()
-        # self.pool=redis.Redis()
+    # def __init__(self):
+    years = str(datetime.datetime.now().year)
+    pool = redis.Redis(host=settings.REDIS_HOST_FIND, port=6379, db=settings.REDIS_DB_FIND,decode_responses=True)
+    cookies = {
+        "user_trace_token": "20171121112654-d2256ffd-ce6b-11e 7-9971-5254005c3644",
+        "LGUID": "20171121112654-d22572b4-ce6b-11e7-9971-5254005c3644",
+        "_ga": "GA1.2.1514235968.1511234812",
+        "LG_LOGIN_USER_ID": "dc82d3e8edcc06f3ee143961873c3ba4ad0d8fe42571bced",
+        "index_location_city": "%E5%85%A8%E5%9B%BD",
+        "JSESSIONID": "ABAAABAACEBACDGCA1C30CEA6B9D058C206196A1051D923",
+        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1530191868,1530289763,1530364609,1532137298",
+        "_gid": "GA1.2.336535918.1532137304",
+        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1532137332",
+        "LGRID": "20180721094213-4a720817-8c87-11e8-a017-525400f775ce",
+        "TG-TRACK-CODE": "hpage_code",
+    }
+    url = 'https://www.lagou.com/gongsi/searchPosition.json'
+    # self.session = DBSession()
+    # self.pool=redis.Redis()
 
     def start_requests(self):
         # obj = self.session.query(Company).all()

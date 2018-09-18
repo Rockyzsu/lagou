@@ -4,6 +4,8 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import datetime
+
 from lagou.models import Jobs, DBSession,JobDetails
 from lagou.items import LagouItem, CompanyItem, JobDetailsItem
 import redis
@@ -19,10 +21,12 @@ class LagouPipeline(object):
 
     def process_item(self, item, spider):
         if isinstance(item, LagouItem):
-
-            if self.session.query(Jobs).filter(Jobs.positionId == item['positionId'],
-                                               Jobs.companyId == item['companyId']).first():
-                return item
+            ret = self.session.query(Jobs).filter(Jobs.positionId == item['positionId'],
+                                            Jobs.companyId == item['companyId']).first()
+            if ret:
+                ret.createTime=item['createTime']
+                ret.updated=datetime.datetime.now()
+                # return item
             else:
                 obj = Jobs(
                     companyId=item['companyId'],
@@ -46,11 +50,12 @@ class LagouPipeline(object):
                     companyLabelList=item['companyLabelList'],
                 )
                 self.session.add(obj)
-                try:
-                    self.session.commit()
-                except Exception as e:
-                    print(e)
-                    self.session.rollback()
+
+            try:
+                self.session.commit()
+            except Exception as e:
+                print(e)
+                self.session.rollback()
 
         elif isinstance(item, CompanyItem):
             # 公司信息存入mysql数据库
@@ -76,6 +81,7 @@ class LagouPipeline(object):
                 advantage=item['advantage'],
                 description=item['description'],
                 address=item['address'],
+                jobTitle=item['jobTitle'],
             )
             self.session.add(obj)
             try:
