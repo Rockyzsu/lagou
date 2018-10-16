@@ -85,7 +85,7 @@ class JobDetails(scrapy.Spider):
 
 
 def upload_jobid():
-    r = redis.StrictRedis(settings.REDIS_HOST, port=6379, db=12, decode_responses=True)
+    r = redis.StrictRedis('10.18.4.211', port=6379, db=12, decode_responses=True)
     session = DBSession()
     obj = session.query(Jobs.positionId).order_by(Jobs.createTime).all()
     for i in obj:
