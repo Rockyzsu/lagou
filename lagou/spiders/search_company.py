@@ -1,14 +1,17 @@
 # -*-coding:utf-8
+import pymongo
+from lagou.models import Jobs, DBSession
 import requests
 import redis
 import pymysql
 from lagou import settings
+from lagou import config
 # 根据招聘的职位找公司名
 def get_redis(db_num):
-    pool = redis.Redis(host=settings.REDIS_HOST_FIND, port=6379, db=db_num,decode_responses=True)
+    pool = redis.Redis(host=config.redis_host, port=6379, db=db_num,decode_responses=True)
     return pool
 
-job_redis = get_redis(5)
+# job_redis = get_redis(5)
 
 def get_mysql_conn(db):
     conn = pymysql.connect(settings.MYSQL_HOST, settings.MYSQL_USER, settings.MYSQL_PASSWD, db, charset='utf8')
@@ -31,6 +34,7 @@ def find_positionName():
         print('Count : ',count)
         enqueue_redis(name.strip() )
         count+=1
+
 def comsure_get():
     while 1:
         try:
@@ -73,8 +77,6 @@ def search_company(name):
     print(url)
     headers = {
         'Origin': 'https://www.lagou.com',
-        # 'Content-Length': '38',
-        # 'Accept-Language': 'zh-CN,zh;q=0.9',
         'Accept-Encoding': 'gzip,deflate,br', 'X-Anit-Forge-Code': '0',
         'X-Requested-With': 'XMLHttpRequest', 'X-Anit-Forge-Token': 'None',
         'Host': 'www.lagou.com', 'Accept': 'application/json,text/javascript,*/*;q=0.01',
@@ -123,7 +125,25 @@ def search_company(name):
         if js.get('content').get('positionResult').get('result') is None:
             break
         page += 1
+#
+def upload_jobid():
+    db=pymongo.MongoClient('10.18.6.26',port=27001)
+    session = DBSession()
+    obj = session.query(Jobs.positionId).order_by(Jobs.createTime).all()
+    job_id_list = [i[0] for i in obj]
+    ret = list(db['db_parker']['lagou_jobID'].find({}))
+    ret_list = [i.get('jobid') for i in ret]
+    # for i in ret_list:
+    # count=0
+    for j in job_id_list:
+        if j not in ret_list:
+            try:
+                print(j)
+                db['db_parker']['lagou_jobID'].insert({'jobid':j})
+            except Exception as e:
+                print(e)
 
 if __name__=='__main__':
     # find_positionName()
-    comsure_get()
+    # comsure_get()
+    upload_jobid()

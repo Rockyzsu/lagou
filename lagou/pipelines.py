@@ -12,21 +12,28 @@ import redis
 from sqlalchemy import and_
 from lagou import config
 from lagou import settings
-
+import pymongo
+from scrapy.exceptions import DropItem
 
 class LagouPipeline(object):
+
     def __init__(self):
         self.session = DBSession()
-        self.pool = redis.Redis(host=settings.REDIS_HOST_FIND, port=6379, db=settings.REDIS_DB_FIND)
+        self.db = pymongo.MongoClient('10.18.6.26',port=27001)
+        self.company_id_doc=self.db['db_parker']['lagou_company_id']
+
 
     def process_item(self, item, spider):
+
+        # 职位基本信息，列表形式
         if isinstance(item, LagouItem):
+
             ret = self.session.query(Jobs).filter(Jobs.positionId == item['positionId'],
                                             Jobs.companyId == item['companyId']).first()
             if ret:
                 ret.createTime=item['createTime']
                 ret.updated=datetime.datetime.now()
-                # return item
+
             else:
                 obj = Jobs(
                     companyId=item['companyId'],
@@ -49,6 +56,7 @@ class LagouPipeline(object):
                     # uid=item['uid'],
                     companyLabelList=item['companyLabelList'],
                 )
+
                 self.session.add(obj)
 
             try:
@@ -57,23 +65,18 @@ class LagouPipeline(object):
                 print(e)
                 self.session.rollback()
 
+
         elif isinstance(item, CompanyItem):
             # 公司信息存入mysql数据库
-            '''
-            obj=Company(
-                companyId=item['companyId'],
-                companyName=item['companyFullName']
-            )
-            self.session.add(obj)
+            # 公司的数据存入mongo
+            d={'company_id':item['companyId'], 'company_name':item['companyFullName']}
             try:
-                self.session.commit()
-            except Exception, e:
-                print e
-                self.session.rollback()
-            '''
-
-            # 公司的数据存入redis
-            self.pool.set(item['companyId'], item['companyFullName'])
+                self.company_id_doc.insert(d)
+            except Exception as e:
+                print(e)
+                raise DropItem(item)
+            else:
+                return item
 
         elif isinstance(item, JobDetailsItem):
             obj = JobDetails(
@@ -82,6 +85,8 @@ class LagouPipeline(object):
                 description=item['description'],
                 address=item['address'],
                 jobTitle=item['jobTitle'],
+                companyName=item['companyName'],
+
             )
             self.session.add(obj)
             try:
@@ -89,4 +94,10 @@ class LagouPipeline(object):
             except Exception as e:
                 print(e)
                 self.session.rollback()
+
+            try:
+                self.db['db_parker']['lagou_jobID'].update({'jobid':item['positionId']},{'$set':{'status':1}})
+            except Exception as e:
+                print(e)
+
         return item

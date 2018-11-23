@@ -9,11 +9,8 @@ from lagou  import config
 
 class ProxiesMiddleware(object):
 
-    def __init__(self):
-        self.rds = redis.StrictRedis(config.redis_host, db=config.db, decode_responses=True)
     def process_request(self, request, spider):
-
-        proxyServer = self.proxy_redis()
+        proxyServer = self.get_proxy()
         request.meta["proxy"] = proxyServer
 
     def get_proxy(self, retry=50):
@@ -31,8 +28,3 @@ class ProxiesMiddleware(object):
                 return proxyServer
 
         return None
-
-
-    def proxy_redis(self):
-        proxy = self.rds.randomkey()
-        return 'http://{}'.format(proxy)

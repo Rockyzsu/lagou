@@ -42,3 +42,4 @@ class JobDetailsItem(scrapy.Item):
     description=scrapy.Field()
     address=scrapy.Field()
     jobTitle=scrapy.Field()
+    companyName=scrapy.Field()

@@ -1,16 +1,17 @@
 # -*-coding=utf-8-*-
 import re
+import time
 
+import pymongo
 import scrapy
 import redis
-from lagou.models import Jobs, DBSession
 from lagou.items import JobDetailsItem
-from lagou import settings
+from lagou import config
 
-
+# 根据jobid去获取job detail
 class JobDetails(scrapy.Spider):
     name = 'job_details'
-    r = redis.StrictRedis(settings.REDIS_HOST, port=6379, db=12, decode_responses=True)
+    db=pymongo.MongoClient('10.18.6.26',port=27001)
     cookies = {"_ga": "GA1.2.1115394106.1535708491",
                "user_trace_token": "20180831174132-0b7960ed-ad02-11e8-be72-525400f775ce",
                "LGUID": "20180831174132-0b796492-ad02-11e8-be72-525400f775ce",
@@ -42,53 +43,65 @@ class JobDetails(scrapy.Spider):
 
     def start_requests(self):
 
-        jobid = self.r.lpop('lagou_jobID_list')
+        jobid=self.db['db_parker']['lagou_jobID']
 
-        while jobid:
+        for item in jobid.find({'status':{'$exists':False}}):
+
+            jobid=item.get('jobid')
+
             url = 'https://www.lagou.com/jobs/{}.html'.format(jobid)
             yield scrapy.Request(url=url, headers=self.headers, meta={'jobid': jobid},cookies=self.cookies)
-            jobid = self.r.lpop('lagou_jobID_list')
 
     def parse(self, response):
         item = JobDetailsItem()
 
-        if '该信息已经被删除鸟' in response.text:
+        positionId = response.meta['jobid']
 
-            positionId = response.meta['jobid']
-            jobTitle = response.xpath('//title/text()').extract_first().replace('-拉勾网', '')
+        if '该信息已经被删除鸟' in response.text:
 
             item['positionId'] = positionId
             item['description'] = '过期'
             item['advantage'] = None
             item['address'] = None
-            item['jobTitle'] = jobTitle
+            title = response.xpath('//title/text()').extract_first()
+            title_sp = title.split('-')
+            if len(title_sp) > 2:
+                job_title, companyName = title_sp[0], title_sp[1]
+            else:
+                job_title, companyName = None, None
+            item['jobTitle'] = job_title
+            item['companyName']=companyName
+
             yield item
+
         else:
             advantage = response.xpath('//dd[@class="job-advantage"]//p/text()').extract_first()
             if advantage:
                 advantage = advantage.strip()
-            positionId = response.meta['jobid']
             description = response.xpath('//dd[@class="job_bt"]/div')[0].xpath('string(.)').extract_first()
+
             if description:
                 description = description.strip()
 
             address = response.xpath('//div[@class="work_addr"]')[0].xpath('string(.)').extract_first()
             if address:
                 address = address.strip()
-            jobTitle = response.xpath('//title/text()').extract_first().replace('-拉勾网', '')
+            title = response.xpath('//title/text()').extract_first()
+            title_sp = title.split('-')
+
+            if len(title_sp)>2:
+                job_title , companyName =title_sp[0],title_sp[1]
+            else:
+                job_title,companyName=None,None
+
             item['positionId'] = positionId
             item['description'] = description
             item['advantage'] = advantage
             item['address'] = address
-            item['jobTitle'] = jobTitle
+            item['jobTitle'] = job_title
+            item['companyName']=companyName
             yield item
 
 
-def upload_jobid():
-    r = redis.StrictRedis('10.18.4.211', port=6379, db=12, decode_responses=True)
-    session = DBSession()
-    obj = session.query(Jobs.positionId).order_by(Jobs.createTime).all()
-    for i in obj:
-        r.lpush('lagou_jobID_list', i[0])
 
-upload_jobid()
+

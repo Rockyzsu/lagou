@@ -53,9 +53,10 @@ class JobDetails(Base):
     id = Column(Integer, primary_key=True,autoincrement=True)
     positionId = Column(String(30), index=True)
     advantage=Column(Text)
-    jobTitle=Column(Text)
+    jobTitle=Column(String(100))
     description=Column(Text)
     address=Column(Text)
+    companyName=Column(String(200))
 
     updated = Column(DateTime, default=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
