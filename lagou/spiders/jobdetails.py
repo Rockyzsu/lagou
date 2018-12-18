@@ -28,7 +28,8 @@ class JobDetails(scrapy.Spider):
                "_gid": "GA1.2.1680411421.1537234245",
                "TG-TRACK-CODE": "index_hotjob",
                "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1537234264",
-               "LGRID": "20180918093118-8a8ff04b-bae2-11e8-baf2-5254005c3644"}
+               "LGRID": "20180918093118-8a8ff04b-bae2-11e8-baf2-5254005c3644"
+               }
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Accept-Encoding': 'gzip,deflate,br',
@@ -64,35 +65,51 @@ class JobDetails(scrapy.Spider):
             item['advantage'] = None
             item['address'] = None
             title = response.xpath('//title/text()').extract_first()
-            title_sp = title.split('-')
-            if len(title_sp) > 2:
-                job_title, companyName = title_sp[0], title_sp[1]
-            else:
-                job_title, companyName = None, None
-            item['jobTitle'] = job_title
-            item['companyName']=companyName
+            if title:
+                title_sp = title.split('-')
+                if len(title_sp) > 2:
+                    job_title, companyName = title_sp[0], title_sp[1]
+                else:
+                    job_title, companyName = None, None
+
+                item['jobTitle'] = job_title
+                item['companyName']=companyName
 
             yield item
 
         else:
-            advantage = response.xpath('//dd[@class="job-advantage"]//p/text()').extract_first()
-            if advantage:
+            try:
+                advantage = response.xpath('//dd[@class="job-advantage"]//p/text()').extract_first()
                 advantage = advantage.strip()
-            description = response.xpath('//dd[@class="job_bt"]/div')[0].xpath('string(.)').extract_first()
+            except Exception as e:
+                print(e)
+                advantage=None
 
-            if description:
+            try:
+                description = response.xpath('//dd[@class="job_bt"]/div')[0].xpath('string(.)').extract_first()
                 description = description.strip()
+            except Exception as e:
+                print(e)
+                description = None
 
-            address = response.xpath('//div[@class="work_addr"]')[0].xpath('string(.)').extract_first()
-            if address:
+            try:
+                address = response.xpath('//div[@class="work_addr"]')[0].xpath('string(.)').extract_first()
                 address = address.strip()
-            title = response.xpath('//title/text()').extract_first()
-            title_sp = title.split('-')
+            except Exception as e:
+                print(e)
+                address = None
 
-            if len(title_sp)>2:
-                job_title , companyName =title_sp[0],title_sp[1]
+            title = response.xpath('//title/text()').extract_first()
+            if title:
+                title_sp = title.split('-')
+
+                if len(title_sp)>2:
+                    job_title , companyName =title_sp[0],title_sp[1]
+                else:
+                    job_title,companyName=None,None
             else:
-                job_title,companyName=None,None
+                job_title=title
+                companyName=title
 
             item['positionId'] = positionId
             item['description'] = description

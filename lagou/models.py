@@ -51,7 +51,7 @@ class JobDetails(Base):
 
     __tablename__ = 'tb_jobs_details'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    positionId = Column(String(30), index=True)
+    positionId = Column(Integer,index=True)
     advantage=Column(Text)
     jobTitle=Column(String(100))
     description=Column(Text)

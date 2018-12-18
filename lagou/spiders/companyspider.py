@@ -13,7 +13,8 @@ class CompanyInfo(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
-        self.city = [215]
+        # 230 东莞
+        self.city = [230]
         #  获取更多城市，替换213 这个数字就可以， 根据不同城市填写
         self.url = 'https://www.lagou.com/gongsi/{}-0-0.json'
 
@@ -31,9 +32,7 @@ class CompanyInfo(scrapy.Spider):
         self.first_headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01',
                               'Accept-Encoding': 'gzip,deflate,br', 'Accept-Language': 'zh,en;q=0.9,en-US;q=0.8',
                               'Cache-Control': 'no-cache', 'Connection': 'keep-alive',
-                              # 'Content-Length': '40',
                               'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                              # 'Cookie': 'JSESSIONID=ABAAABAAAGFABEF8B7F2F7B6456E459FEF825D0DBB1FAAE;user_trace_token=20181119184953-f8b2ed00-c305-48a2-b797-99ec6c2809a4;_ga=GA1.2.1290529047.1542624594;Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542624594;LGUID=20181119184956-da92a9a5-ebe8-11e8-a727-525400f775ce;_gid=GA1.2.41473263.1542781721;LGSID=20181121142839-aeed2262-ed56-11e8-b119-525400f775ce;index_location_city=%E5%85%A8%E5%9B%BD;TG-TRACK-CODE=index_company;Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542782542;LGRID=20181121144220-98b2f1f8-ed58-11e8-8a9b-5254005c3644',
                               'Host': 'www.lagou.com', 'Origin': 'https://www.lagou.com', 'Pragma': 'no-cache',
                               'Referer': 'https://www.lagou.com/gongsi/{}-0-0-0',
                               'User-Agent': 'Mozilla/5.0(WindowsNT6.1;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/67.0.3396.99Safari/537.36',
