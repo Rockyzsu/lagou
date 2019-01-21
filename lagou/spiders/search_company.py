@@ -125,46 +125,9 @@ def search_company(name):
         if js.get('content').get('positionResult').get('result') is None:
             break
         page += 1
-#
-def upload_jobid():
-    db=pymongo.MongoClient('10.18.6.26',port=27001)
-    session = DBSession()
-    obj = session.query(Jobs.positionId).all()
-    job_id_list= [i[0] for i in obj]
-    job_id_set = set(job_id_list)
-
-    ret = db['db_parker']['lagou_jobID'].find({},{'jobid':1})
-    ret_list = [i.get('jobid') for i in ret]
-    ret_list_set = set(ret_list)
-    # [ret_list_set.add(i.get('jobid')) for i in ret]
-
-    total = job_id_set | ret_list_set
-    result = total-ret_list_set
-    d=[]
-    for j in result:
-        d.append({'jobid':j[0]})
-
-    batch_size = 20
-    l = len(d)
-    each_size = int(l/batch_size)
-
-    # for i in range(batch_size+1):
-    #     print(i)
-    #     print(each_size*(i+1))
-    #     each_item = list(d[i:each_size*(i+1)])
-    #     try:
-    #         db['db_parker']['lagou_jobID'].insert_many(each_item)
-    #     except Exception as e:
-    #         print(e)
-
-    for i in d:
-
-        try:
-            db['db_parker']['lagou_jobID'].insert(i)
-        except Exception as e:
-            print(e)
 
 if __name__=='__main__':
     # find_positionName()
     # comsure_get()
-    upload_jobid()
+    # upload_jobid()
+    pass

@@ -14,7 +14,7 @@ from lagou.items import LagouItem
 
 class QuerySpider(scrapy.Spider):
     name = 'query_job'
-    kws = ['爬虫','数据挖掘']
+    kws = ['爬虫','数据挖掘','数据分析','量化']
     years = str(datetime.datetime.now().year)
 
     headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding': 'gzip,deflate,br',
