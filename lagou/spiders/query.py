@@ -14,36 +14,41 @@ from lagou.items import LagouItem
 
 class QuerySpider(scrapy.Spider):
     name = 'query_job'
-    kws = ['爬虫','数据挖掘','数据分析','量化']
+    kws = ['爬虫']
     years = str(datetime.datetime.now().year)
 
-    headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding': 'gzip,deflate,br',
-               'Accept-Language': 'zh,en;q=0.9,en-US;q=0.8', 'Cache-Control': 'no-cache',
-               'Connection': 'keep-alive',
+    headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding':
+        'gzip,deflate,br',
+               'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache',
+               # 'Connection': 'keep-alive',
                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+               'Cookie': 'JSESSIONID=ABAAABAABEEAAJAACF8F22F99AFA35F9EEC28F2D0E46A41;_ga=GA1.2.331323650.1548204973;_gat=1;Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548204973;user_trace_token=20190123085612-adf35b62-1ea9-11e9-b744-5254005c3644;LGSID=20190123085612-adf35c69-1ea9-11e9-b744-5254005c3644;PRE_UTM=;PRE_HOST=;PRE_SITE=;PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F;LGUID=20190123085612-adf35ed5-1ea9-11e9-b744-5254005c3644;_gid=GA1.2.1809874038.1548204973;index_location_city=%E6%B7%B1%E5%9C%B3;TG-TRACK-CODE=index_search;SEARCH_ID=169bf76c08b548f8830967a1968d10ca;Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548204985;LGRID=20190123085624-b52a0555-1ea9-11e9-b744-5254005c3644',
                'Host': 'www.lagou.com', 'Origin': 'https://www.lagou.com', 'Pragma': 'no-cache',
                'Referer': 'https://www.lagou.com/jobs/list_%E7%88%AC%E8%99%AB?labelWords=&fromSearch=true&suginput=',
-               'User-Agent': 'Mozilla/5.0(WindowsNT6.1;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/67.0.3396.99Safari/537.36',
-               'X-Anit-Forge-Code': '0', 'X-Anit-Forge-Token': 'None', 'X-Requested-With': 'XMLHttpRequest'}
+               'User-Agent': 'Mozilla/5.0(WindowsNT6.3;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/71.0.3578.98Safari/537.36',
+               'X-Anit-Forge-Code': '0',
+               'X-Anit-Forge-Token': 'None',
+               'X-Requested-With': 'XMLHttpRequest'
+               }
     # 需要定时替换，替换成读取文本或者数据库
     cookies = {
-        "user_trace_token": "20181119184953-f8b2ed00-c305-48a2-b797-99ec6c2809a4",
-        "_ga": "GA1.2.1290529047.1542624594",
-        "LGUID": "20181119184956-da92a9a5-ebe8-11e8-a727-525400f775ce",
-        "index_location_city": "%E5%85%A8%E5%9B%BD",
-        "JSESSIONID": "ABAAABAAAGFABEF49CA7C79B23EF8098E610B7EB337CC82",
-        "_gid": "GA1.2.870964809.1544336355",
+        "JSESSIONID": "ABAAABAABEEAAJAACF8F22F99AFA35F9EEC28F2D0E46A41",
+        "_ga": "GA1.2.331323650.1548204973",
         "_gat": "1",
-        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1542624594,1544336355",
-        "LGSID": "20181209141914-59ff5c49-fb7a-11e8-8ced-5254005c3644",
+        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1548204973",
+        "user_trace_token": "20190123085612-adf35b62-1ea9-11e9-b744-5254005c3644",
+        "LGSID": "20190123085612-adf35c69-1ea9-11e9-b744-5254005c3644",
         "PRE_UTM": "",
         "PRE_HOST": "",
         "PRE_SITE": "",
         "PRE_LAND": "https%3A%2F%2Fwww.lagou.com%2F",
-        "TG-TRACK-CODE": "index_navigation",
-        "SEARCH_ID": "3b8be1c24b374ae694d54c3876828a2d",
-        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1544336371",
-        "LGRID": "20181209141930-6386a2d0-fb7a-11e8-8ced-5254005c3644",
+        "LGUID": "20190123085612-adf35ed5-1ea9-11e9-b744-5254005c3644",
+        "_gid": "GA1.2.1809874038.1548204973",
+        "index_location_city": "%E6%B7%B1%E5%9C%B3",
+        "TG-TRACK-CODE": "index_search",
+        "SEARCH_ID": "169bf76c08b548f8830967a1968d10ca",
+        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1548204985",
+        "LGRID": "20190123085624-b52a0555-1ea9-11e9-b744-5254005c3644",
     }
 
     data = {
@@ -56,16 +61,16 @@ class QuerySpider(scrapy.Spider):
 
     def start_requests(self):
         for kw in self.kws:
-            self.data['kd']=kw
+            self.data['kd'] = kw
 
             yield scrapy.FormRequest(
-            url=self.URL,
-            headers=self.headers,
-            cookies=self.cookies,
-            formdata=self.data,
-            dont_filter=True,
-            meta={'page': 1}
-        )
+                url=self.URL,
+                headers=self.headers,
+                # cookies=self.cookies,
+                formdata=self.data,
+                dont_filter=True,
+                meta={'page': 1, 'kd': kw}
+            )
 
     def parse(self, response):
 
@@ -74,8 +79,17 @@ class QuerySpider(scrapy.Spider):
         except Exception as e:
             print(e)
             return
+        try:
+            job_list = js_data.get('content', {}).get('positionResult', {}).get('result')
+        except Exception as e:
+            print(e)
+            print(response.text)
+            return
 
-        job_list = js_data.get('content').get('positionResult').get('result')
+        if not job_list:
+            print(response.text)
+            return
+
         for i in job_list:
 
             item = LagouItem()
@@ -140,12 +154,13 @@ class QuerySpider(scrapy.Spider):
             data = self.data.copy()
             next_page = current_page + 1
             data['pn'] = str(next_page)
+            data['kd'] = response.meta['kd']
 
             yield scrapy.FormRequest(
                 url=self.URL,
                 headers=self.headers,
-                cookies=self.cookies,
+                # cookies=self.cookies,
                 formdata=data,
                 dont_filter=True,
-                meta={'page': next_page}
+                meta={'page': next_page, 'kd': response.meta['kd']}
             )
