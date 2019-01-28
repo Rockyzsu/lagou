@@ -6,50 +6,34 @@ import datetime
 import json
 import math
 import re
+import requests
 
 import scrapy
 # from scrapy import Spider,Request,FormRequest
 from lagou.items import LagouItem
+import urllib.parse
 
+
+# 需要自动更新cookie
 
 class QuerySpider(scrapy.Spider):
     name = 'query_job'
-    kws = ['爬虫']
+    kws = ['爬虫', '数据挖掘', '数据分析']
     years = str(datetime.datetime.now().year)
-
     headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding':
         'gzip,deflate,br',
                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache',
                # 'Connection': 'keep-alive',
                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-               'Cookie': 'JSESSIONID=ABAAABAABEEAAJAACF8F22F99AFA35F9EEC28F2D0E46A41;_ga=GA1.2.331323650.1548204973;_gat=1;Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548204973;user_trace_token=20190123085612-adf35b62-1ea9-11e9-b744-5254005c3644;LGSID=20190123085612-adf35c69-1ea9-11e9-b744-5254005c3644;PRE_UTM=;PRE_HOST=;PRE_SITE=;PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F;LGUID=20190123085612-adf35ed5-1ea9-11e9-b744-5254005c3644;_gid=GA1.2.1809874038.1548204973;index_location_city=%E6%B7%B1%E5%9C%B3;TG-TRACK-CODE=index_search;SEARCH_ID=169bf76c08b548f8830967a1968d10ca;Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548204985;LGRID=20190123085624-b52a0555-1ea9-11e9-b744-5254005c3644',
+               # 'Cookie':'JSESSIONID=ABAAABAABEEAAJAACF8F22F99AFA35F9EEC28F2D0E46A41; _ga=GA1.2.331323650.1548204973; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548204973; user_trace_token=20190123085612-adf35b62-1ea9-11e9-b744-5254005c3644; LGUID=20190123085612-adf35ed5-1ea9-11e9-b744-5254005c3644; _gid=GA1.2.1809874038.1548204973; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2216878b38c2b1f2-0fc8f58d18d562-671b197c-2073600-16878b38c2c8b4%22%2C%22%24device_id%22%3A%2216878b38c2b1f2-0fc8f58d18d562-671b197c-2073600-16878b38c2c8b4%22%7D; LG_LOGIN_USER_ID=d10beafda0ba442e7fbc48af7d2de3524a3f4b0e75614abd; _putrc=DFAF58A586D854B0; login=true; unick=%E9%99%88%E9%94%A6%E4%BC%9F; showExpriedIndex=1; showExpriedCompanyHome=1; showExpriedMyPublish=1; hasDeliver=209; index_location_city=%E5%85%A8%E5%9B%BD; _gat=1; LGSID=20190124085649-ee0c962a-1f72-11e9-977f-525400f775ce; PRE_UTM=; PRE_HOST=; PRE_SITE=; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; gate_login_token=838ff604b9266ba08eb2346edd893d244d1e798ed5b7f887; X_MIDDLE_TOKEN=2b8deed60f86f33374c17e46b4bbc6ae; SEARCH_ID=f8b50adc016c42af812c4f9f304b0223; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1548291536; LGRID=20190124085855-399ee8ad-1f73-11e9-b74c-5254005c3644; TG-TRACK-CODE=search_code',
                'Host': 'www.lagou.com', 'Origin': 'https://www.lagou.com', 'Pragma': 'no-cache',
-               'Referer': 'https://www.lagou.com/jobs/list_%E7%88%AC%E8%99%AB?labelWords=&fromSearch=true&suginput=',
+               'Referer': 'https://www.lagou.com/jobs/list_{}?labelWords=&fromSearch=true&suginput=',
                'User-Agent': 'Mozilla/5.0(WindowsNT6.3;WOW64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/71.0.3578.98Safari/537.36',
                'X-Anit-Forge-Code': '0',
                'X-Anit-Forge-Token': 'None',
                'X-Requested-With': 'XMLHttpRequest'
                }
     # 需要定时替换，替换成读取文本或者数据库
-    cookies = {
-        "JSESSIONID": "ABAAABAABEEAAJAACF8F22F99AFA35F9EEC28F2D0E46A41",
-        "_ga": "GA1.2.331323650.1548204973",
-        "_gat": "1",
-        "Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1548204973",
-        "user_trace_token": "20190123085612-adf35b62-1ea9-11e9-b744-5254005c3644",
-        "LGSID": "20190123085612-adf35c69-1ea9-11e9-b744-5254005c3644",
-        "PRE_UTM": "",
-        "PRE_HOST": "",
-        "PRE_SITE": "",
-        "PRE_LAND": "https%3A%2F%2Fwww.lagou.com%2F",
-        "LGUID": "20190123085612-adf35ed5-1ea9-11e9-b744-5254005c3644",
-        "_gid": "GA1.2.1809874038.1548204973",
-        "index_location_city": "%E6%B7%B1%E5%9C%B3",
-        "TG-TRACK-CODE": "index_search",
-        "SEARCH_ID": "169bf76c08b548f8830967a1968d10ca",
-        "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1548204985",
-        "LGRID": "20190123085624-b52a0555-1ea9-11e9-b744-5254005c3644",
-    }
 
     data = {
         'first': 'false',
@@ -60,19 +44,24 @@ class QuerySpider(scrapy.Spider):
     URL = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
 
     def start_requests(self):
-        for kw in self.kws:
-            self.data['kd'] = kw
+        cookies = self.update_cookies_redis()
+        for kd in self.kws:
+            word = urllib.parse.unquote(kd)
+            self.headers['Referer'] = self.headers['Referer'].format(word)
+            self.data['kd'] = kd
 
             yield scrapy.FormRequest(
                 url=self.URL,
                 headers=self.headers,
-                # cookies=self.cookies,
+                cookies=cookies,
                 formdata=self.data,
                 dont_filter=True,
-                meta={'page': 1, 'kd': kw}
+                meta={'page': 1, 'kd': kd, 'cookiejar': True}
             )
 
     def parse(self, response):
+        kd = response.meta['kd']
+        current_page = response.meta['page']
 
         try:
             js_data = json.loads(response.text)
@@ -88,7 +77,21 @@ class QuerySpider(scrapy.Spider):
 
         if not job_list:
             print(response.text)
+            if js_data.get('msg') == '您操作太频繁,请稍后再访问':
+                cookies = self.update_cookies()
+                print('更新cookiejar')
+                print(cookies)
+                yield scrapy.FormRequest(
+                    url=self.URL,
+                    headers=self.headers,
+                    cookies=cookies,
+                    formdata=self.data,
+                    dont_filter=True,
+                    meta={'page': current_page, 'kd': kd, 'cookiejar': True}
+                )
+
             return
+            # return
 
         for i in job_list:
 
@@ -146,7 +149,6 @@ class QuerySpider(scrapy.Spider):
 
             yield item
 
-        current_page = response.meta['page']
         total_page = int(math.ceil(
             int(js_data.get('content').get('positionResult').get('totalCount')) / 15))
 
@@ -154,13 +156,28 @@ class QuerySpider(scrapy.Spider):
             data = self.data.copy()
             next_page = current_page + 1
             data['pn'] = str(next_page)
-            data['kd'] = response.meta['kd']
-
+            data['kd'] = kd
+            word = urllib.parse.unquote(kd)
+            self.headers['Referer'] = self.headers['Referer'].format(word)
             yield scrapy.FormRequest(
                 url=self.URL,
                 headers=self.headers,
                 # cookies=self.cookies,
                 formdata=data,
                 dont_filter=True,
-                meta={'page': next_page, 'kd': response.meta['kd']}
+                meta={'page': next_page, 'kd': kd, 'cookiejar': True}
             )
+
+    def update_cookies(self):
+        headers = {'Host': 'www.lagou.com',
+                   'Referer': 'https://www.lagou.com/',
+                   'Upgrade-Insecure-Requests': '1',
+                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+        url = 'https://www.lagou.com/'
+        r = requests.get(url, headers)
+        # print(r.status_code)
+        # print(r.text)
+        # print(r.cookies['JSESSIONID'])
+        return dict(r.cookies)
+
+    def update_cookies_redis(self):

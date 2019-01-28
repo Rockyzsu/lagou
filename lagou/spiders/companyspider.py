@@ -13,7 +13,9 @@ class CompanyInfo(scrapy.Spider):
     allowed_domains = ['lagou.com']
 
     def __init__(self):
+        super(CompanyInfo,self).__init__()
         # 230 东莞
+        # 深圳
         self.city = [230]
         #  获取更多城市，替换213 这个数字就可以， 根据不同城市填写
         self.url = 'https://www.lagou.com/gongsi/{}-0-0.json'
