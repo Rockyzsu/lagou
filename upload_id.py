@@ -7,11 +7,11 @@ from lagou.models import Jobs, DBSession
 
 
 def upload_jobid():
-    db = pymongo.MongoClient('10.18.6.26', port=27001)
     session = DBSession()
     obj = session.query(Jobs.positionId).all()
     job_id_list = [i[0] for i in obj]
     job_id_set = set(job_id_list)
+    db = pymongo.MongoClient('10.18.6.46', port=27001)
 
     ret = db['db_parker']['lagou_jobID'].find({}, {'jobid': 1})
     ret_list = [i.get('jobid') for i in ret]

@@ -14,12 +14,12 @@ from lagou import config
 from lagou import settings
 import pymongo
 from scrapy.exceptions import DropItem
-
+from lagou.settings import MONGODB
 class LagouPipeline(object):
 
     def __init__(self):
         self.session = DBSession()
-        self.db = pymongo.MongoClient('10.18.6.26',port=27001)
+        self.db = pymongo.MongoClient(MONGODB,port=27001)
         self.company_id_doc=self.db['db_parker']['lagou_company_id']
 
 

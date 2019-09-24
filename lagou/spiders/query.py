@@ -6,19 +6,22 @@ import datetime
 import json
 import math
 import re
+import time
+
 import requests
 
 import scrapy
-# from scrapy import Spider,Request,FormRequest
+from scrapy import Spider, Request, FormRequest
 from lagou.items import LagouItem
 import urllib.parse
 
 
 # 需要自动更新cookie
 
-class QuerySpider(scrapy.Spider):
+class QuerySpider(Spider):
     name = 'query_job'
-    kws = ['爬虫', '数据挖掘', '数据分析']
+    kws = ['爬虫','python数据挖掘']
+    # kws = ['python数据挖掘']
     years = str(datetime.datetime.now().year)
     headers = {'Accept': 'application/json,text/javascript,*/*;q=0.01', 'Accept-Encoding':
         'gzip,deflate,br',
@@ -33,6 +36,7 @@ class QuerySpider(scrapy.Spider):
                'X-Anit-Forge-Token': 'None',
                'X-Requested-With': 'XMLHttpRequest'
                }
+
     # 需要定时替换，替换成读取文本或者数据库
 
     data = {
@@ -43,20 +47,32 @@ class QuerySpider(scrapy.Spider):
 
     URL = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
 
+    url_start = 'https://www.lagou.com/jobs/list_{}?city={}&isSchoolJob=1'.format(
+        urllib.parse.quote("爬虫工程师"), urllib.parse.quote("全国"))
+
     def start_requests(self):
-        cookies = self.update_cookies_redis()
+
+
+        return [Request(self.url_start,
+                        meta={'cookiejar': 1}, headers=self.headers
+                        , callback=self.request_cookie, dont_filter=True)]
+
+        # cookies = self.update_cookies_redis()
+
+    def request_cookie(self, response):
+
         for kd in self.kws:
             word = urllib.parse.unquote(kd)
             self.headers['Referer'] = self.headers['Referer'].format(word)
             self.data['kd'] = kd
 
-            yield scrapy.FormRequest(
+            yield FormRequest(
                 url=self.URL,
                 headers=self.headers,
-                cookies=cookies,
+                # cookies=cookies,
                 formdata=self.data,
                 dont_filter=True,
-                meta={'page': 1, 'kd': kd, 'cookiejar': True}
+                meta={'page': 1, 'kd': kd, 'cookiejar': response.meta['cookiejar']}
             )
 
     def parse(self, response):
@@ -78,20 +94,13 @@ class QuerySpider(scrapy.Spider):
         if not job_list:
             print(response.text)
             if js_data.get('msg') == '您操作太频繁,请稍后再访问':
-                cookies = self.update_cookies()
+                time.sleep(5)
                 print('更新cookiejar')
-                print(cookies)
-                yield scrapy.FormRequest(
-                    url=self.URL,
-                    headers=self.headers,
-                    cookies=cookies,
-                    formdata=self.data,
-                    dont_filter=True,
-                    meta={'page': current_page, 'kd': kd, 'cookiejar': True}
-                )
+                yield Request(self.url_start,
+                        meta={'cookiejar': 1}, headers=self.headers,
+                        callback=self.request_cookie, dont_filter=True)
 
-            return
-            # return
+
 
         for i in job_list:
 
@@ -165,7 +174,7 @@ class QuerySpider(scrapy.Spider):
                 # cookies=self.cookies,
                 formdata=data,
                 dont_filter=True,
-                meta={'page': next_page, 'kd': kd, 'cookiejar': True}
+                meta={'page': next_page, 'kd': kd, 'cookiejar': response.meta['cookiejar']}
             )
 
     def update_cookies(self):
@@ -181,3 +190,4 @@ class QuerySpider(scrapy.Spider):
         return dict(r.cookies)
 
     def update_cookies_redis(self):
+        pass

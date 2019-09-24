@@ -13,8 +13,8 @@ class ProxiesMiddleware(object):
         proxyServer = self.get_proxy()
         request.meta["proxy"] = proxyServer
 
-    def get_proxy(self, retry=50):
-        proxyurl = 'http://{}:8081/dynamicIp/common/getDynamicIp.do'.format(config.proxyip)
+    def get_proxy(self, retry=5):
+        proxyurl = 'http://{}:8101/dynamicIp/common/getDynamicIp.do'.format(config.proxyip)
         for i in range(1, retry + 1):
             try:
                 r = requests.get(proxyurl, timeout=10)
@@ -28,3 +28,15 @@ class ProxiesMiddleware(object):
                 return proxyServer
 
         return None
+
+    def high_proxy(self):
+        url='http://39.108.59.38:7772/Tools/proxyIP.ashx?OrderNumber=10292c8277746dbf62bddc40e1583044&poolIndex=85323&cache=1&qty=1'
+        r = requests.get(url)
+        s=r.text()
+        return 'http://'+s.strip()
+
+
+class RedirectMiddleware(object):
+
+    def response_request(self,):
+        pass

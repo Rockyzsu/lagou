@@ -5,5 +5,6 @@
 import datetime
 from scrapy import cmdline
 
-cmd='scrapy crawl job_details -s LOG_FILE=detail-{}.log'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
+cmd='scrapy crawl job_details'
+# cmd='scrapy crawl job_details -s LOG_FILE=detail-{}.log'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
 cmdline.execute(cmd.split())

@@ -1,17 +1,23 @@
 # -*-coding=utf-8-*-
 import re
 import time
+import urllib
 
 import pymongo
 import scrapy
+from scrapy import Request
 import redis
 from lagou.items import JobDetailsItem
 from lagou import config
-
+from lagou.models import JobDetails as JDs
+from lagou.models import DBSession
+from lagou.settings import MONGODB
 # 根据jobid去获取job detail
+
 class JobDetails(scrapy.Spider):
     name = 'job_details'
-    db=pymongo.MongoClient('10.18.6.26',port=27001)
+    db=pymongo.MongoClient(MONGODB,port=27001)
+
     cookies = {"_ga": "GA1.2.1115394106.1535708491",
                "user_trace_token": "20180831174132-0b7960ed-ad02-11e8-be72-525400f775ce",
                "LGUID": "20180831174132-0b796492-ad02-11e8-be72-525400f775ce",
@@ -30,6 +36,7 @@ class JobDetails(scrapy.Spider):
                "Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6": "1537234264",
                "LGRID": "20180918093118-8a8ff04b-bae2-11e8-baf2-5254005c3644"
                }
+
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Accept-Encoding': 'gzip,deflate,br',
@@ -42,7 +49,21 @@ class JobDetails(scrapy.Spider):
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0(WindowsNT6.1;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/65.0.3325.162Safari/537.36'}
 
+
+    URL = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
+
+    url_start = 'https://www.lagou.com/jobs/list_{}?city={}&isSchoolJob=1'.format(
+        urllib.parse.quote("爬虫工程师"), urllib.parse.quote("全国"))
+
     def start_requests(self):
+
+
+        return [Request(self.url_start,
+                        meta={'cookiejar': 1}, headers=self.headers
+                        , callback=self.request_cookie, dont_filter=True)]
+
+    def request_cookie(self,response):
+
 
         jobid=self.db['db_parker']['lagou_jobID']
 
@@ -51,7 +72,7 @@ class JobDetails(scrapy.Spider):
             jobid=item.get('jobid')
 
             url = 'https://www.lagou.com/jobs/{}.html'.format(jobid)
-            yield scrapy.Request(url=url, headers=self.headers, meta={'jobid': jobid},cookies=self.cookies)
+            yield scrapy.Request(url=url, headers=self.headers, meta={'jobid': jobid,'cookiejar':response.meta['cookiejar']})
 
     def parse(self, response):
         item = JobDetailsItem()
@@ -120,5 +141,12 @@ class JobDetails(scrapy.Spider):
             yield item
 
 
+class JobDetail_Failed_Retry(scrapy.Spider):
+    name = 'detail_retry'
 
+    def start_requests(self):
+        self.session=DBSession()
+        self.session.query(JDs).filter(JDs.companyName == '').first()
 
+    def parse(self, response):
+        pass
